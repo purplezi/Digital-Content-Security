@@ -129,10 +129,82 @@ end
 
 ### 3.2.1 选择特殊的质量因子，绘制灰度直方图
 
-(1) 选择q为1，10，30，50，70，90，
+(1) 选择q为1，10，30，50，70，90，用内置函数imhist绘制灰度直方图。
+
+```matlab
+% q=[1,10,30];
+q=[50,70,90];
+num=1;
+im=imread('lena512.bmp');
+subplot(2,4,num),imshow(im),title('原始图像');
+num=num+1;
+subplot(2,4,num),imhist(im),title('原始图像的灰度直方图');
+for i=q
+    name=[path,num2str(i),'.jpg'];
+    read=imread(name);
+    num=num+1;
+    subplot(2,4,num),imshow(read),title(['质量因子',int2str(i),'%']);
+    num=num+1;
+    subplot(2,4,num),imhist(read),title(['质量因子',int2str(i),'%的灰度直方图']);
+end
+```
+
+imhist函数绘图的横坐标是灰度级，在此处则是从0到255，纵坐标是每一个灰度级在图像中出现的个数。
+
+![imhist-1](images/imhist-1.png)
+<center> 图4 质量因子q为1，10，30的图像灰度直方图
+
+![imhist-2](images/imhist-2.png)
+<center> 图5 质量因子q为50，70，90的图像灰度直方图
+
+
 
 ### 3.2.2 实验结果分析
 
+(1) 当质量因子越高，JPEG压缩图像的直方图越接近原图。
+
+(2) 当质量因子很低时，直方图的灰度级的分布不集中、稀少且与原图的直方图差异很大。
+
+(3) 问题：为什么不能用imhist？histogram只能画直方图(不推荐使用hist)，则要自己统计图像中灰度级出现的个数，所以很麻烦。
+
+## 3.3 读取JPEG图像文件
+
+编程解码提取第x（学号后两位）个宏块的量化后DCT系数、模拟反量化和逆DCT变换，恢复并显示对应空域图像块，观察并分析JPEG压缩引起的块效应
+
+### 3.3.1 提取JPEG文件的结构
+
+(1) 用imwrite将lena512.bmp转为lena512.jpg，用nsf5中的jpeg_read读取该图像以及其DCT系数。
+
+```matlab
+im=imread('lena512.bmp');
+imwrite(im,'lena512.jpg','.jpg');
+impath='lena512.jpg';
+% a JPEG image structure
+im=jpeg_read(impath);
+% DCT plane
+DCT=im.coef_arrays{1};
+```
+
+(2) 学号为20，则找到第20个8*8的小块的DCT系数。
+
+```matlab
+% 160=20*8;
+% 153=19*8+1;
+block=DCT(1:8,153:160);
+```
+
+(3) 模拟反量化和逆DCT变换、必须得先知道量化表，也可以通过jpeg的结构读出来。还未完成、可能什么地方写错了不太对！！！！！
+
+```matlab
+
+```
+
+(4) 恢复并显示对应空域的图像块
+
+### 3.3.2 观察并分析JPEG压缩引起的块效应
+
+
+### 3.3.2
 
 # 4 参考资料
 (1) 文件格式的说明：

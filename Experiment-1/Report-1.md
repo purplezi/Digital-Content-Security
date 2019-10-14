@@ -217,12 +217,14 @@ im=jpeg_read(impath);
 DCT=im.coef_arrays{1};
 ```
 
-#### 我的学号为20，则找到第20个8*8的小块的DCT系数
+#### 我的学号为20，则找到第20个宏块的DCT系数
 
+由于JPEG是对每个8x8的小块进行DCT，而8x8的小块太小，实验效果不明显，所以选择8x8个8x8的小块，即64个8
+x8小块为一个宏块进行实验验证。
 ```matlab
-% 160=20*8;
-% 153=19*8+1;
-block=DCT(1:8,153:160);
+% 选第20个宏块的起始行的下标为129，结束行的下标为192
+% 选第20个宏块的起始列的下标为129，结束列的下标为192
+block=DCT(129:192,193:256);
 ```
 
 #### 模拟反量化和逆DCT变换
@@ -234,12 +236,23 @@ block=DCT(1:8,153:160);
 (2) 通过jpeg_read读取的量化后的DCT系数和量化表，进行反量化和逆DCT变换。
 
 ```matlab
+bs=64;
+len=bs/8;
+block=DCT(129:192,193:256);
 % get the quantization table读取量化表
 qtable=im.quant_tables{1};
-% 反量化
-qblock=block.*qtable
-rblock=idct2(qblock)
-rblock=uint8(rblock+128)
+rblock=zeros(bs);
+qb=zeros(8);
+for i=1:len
+    for j=1:len
+        % 每个8x8小块进行反量化
+        qb=block((i-1)*8+1:i*8,(j-1)*8+1:j*8).*qtable;
+        % 每个8x8小块进行逆DCT变换
+        rblock((i-1)*8+1:i*8,(j-1)*8+1:j*8)=idct2(qb);
+    end
+end
+% 128移位
+rblock=uint8(rblock+128);
 ```
 
 #### 恢复并显示对应空域的图像块
@@ -248,19 +261,18 @@ rblock=uint8(rblock+128)
 
 ```matlab
 img=imread(impath);
-% 20th-8*8的块所在的位置(1:8,153:160)
-img=img(1:8,153:160);
+img=img(129:192,193:256);
 subplot(1,2,1),imshow(img),title('原始图像');
 subplot(1,2,2),imshow(rblock),title('反变换的图像');
 ```
 
-![origin-change-contrast](images/20-origin-change-contrast.png)
+![origin-change-contrast](images/20th-64x64.png)
 <center> lena512.bmp的第20宏块的空域恢复
 
 
 ### 3.3.2 观察并分析JPEG压缩引起的块效应
 
-(1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色而且显示比较平滑，所以我把块的大小设置为64x64，测试当质量因子为1,5,10,50,90的情况下，图像块的情况。
+(1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色而且显示比较平滑，所以将块的大小设置为64x64，即对一个宏块进行测试，当质量因子为1,5,10,50,90的情况下图像宏块的情况。
 
 ![co1block64](images/co1block64-origin-change-contrast.png)
 <center> 质量因子为1的64x64图像块
@@ -287,4 +299,4 @@ subplot(1,2,2),imshow(rblock),title('反变换的图像');
 
 (2) [读取JPEG文件的压缩质量/质量因子参数](https://blog.csdn.net/gwena/article/details/71123734)
 
-(3) matlab中内置函数imhist的实现过程(https://ww2.mathworks.cn/help/images/ref/imhist.html?s_tid=srchtitle)
+(3) [matlab中内置函数imhist的实现过程](https://ww2.mathworks.cn/help/images/ref/imhist.html?s_tid=srchtitle)

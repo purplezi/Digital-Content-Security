@@ -185,18 +185,20 @@ xlabel('灰度级(8bit)','FontSize',8);
 
 图6是对应lena512.bmp的灰度直方图的绘制，生成的灰度直方图和用imhist生成的相同。
 
+![lena512-gray](images/graypic-lena512.png)
+<center> lena512.bmp灰度直方图
+
 ### 3.2.2 实验结果分析
 
-(1) 当质量因子越高，JPEG压缩图像的直方图越接近原图。
+(1) 当质量因子越高，JPEG压缩图像的直方图越接近原图的直方图。
 
-(2) 当质量因子很低时，直方图的灰度级的分布不集中、稀少且与原图的直方图差异很大。
+(2) 当质量因子很低时，直方图的灰度级的分布不集中、稀少且与原图的直方图差异很大，个别像素点出现的频率极高。
 
-(3) 问题：为什么不能用imhist？histogram只能画直方图(不推荐使用hist)，则要自己统计图像中灰度级出现的个数，所以很麻烦。imhist需要什么内置参数？
 
 
 ## 3.3 读取JPEG图像文件
 
-编程解码提取第x（学号后两位）个宏块的量化后DCT系数、模拟反量化和逆DCT变换，恢复并显示对应空域图像块，观察并分析JPEG压缩引起的块效应
+实验要求：编程解码提取第x（学号后两位）个宏块的量化后DCT系数、模拟反量化和逆DCT变换，恢复并显示对应空域图像块，观察并分析JPEG压缩引起的块效应。
 
 ### 3.3.1 提取JPEG文件的结构
 
@@ -204,24 +206,18 @@ xlabel('灰度级(8bit)','FontSize',8);
 
 (1) 用imwrite将lena512.bmp转为lena512.jpg，因为要处理的是一个jpeg格式的图像。
 
-```matlab
-im=imread('lena512.bmp');
-imwrite(im,'lena512.jpg','.jpg');
-impath='lena512.jpg';
-```
-
 (2)用nsf5中的jpeg_read读取该图像以及其DCT系数。已知jpeg_read的返回值是一个结构体，如图7所示。
     ![jpeg-structure](images/jpeg-structure.png)
-
+    <center> jpeg_read返回的结构体
 
 ```matlab
 % a JPEG image structure
 im=jpeg_read(impath);
-% DCT plane
+% DCT plane 读取DCT系数
 DCT=im.coef_arrays{1};
 ```
 
-#### 学号为20，则找到第20个8*8的小块的DCT系数
+#### 我的学号为20，则找到第20个8*8的小块的DCT系数
 
 ```matlab
 % 160=20*8;
@@ -231,51 +227,58 @@ block=DCT(1:8,153:160);
 
 #### 模拟反量化和逆DCT变换
 
-(1) JPEG解压缩的过程如图7，在JPEG压缩的过程中，先对像素值进行-128的平移操作，然后再进行DCT变换，最后进行量化，然后取整。
+(1) JPEG解压缩的过程如图8，在JPEG压缩的过程中，先对像素值进行-128的平移操作，然后再进行DCT变换，最后进行量化，然后取整。
     ![encode-decode](images/encode-decode.png)
-
+    <center> JPEG压缩和解压缩的过程
 
 (2) 通过jpeg_read读取的量化后的DCT系数和量化表，进行反量化和逆DCT变换。
-    
 
 ```matlab
-% get the quantization table
+% get the quantization table读取量化表
 qtable=im.quant_tables{1};
-
 % 反量化
 qblock=block.*qtable
 rblock=idct2(qblock)
-% 在块20有误差的做法，先取整在移位
-% rblock=uint8(rblock);
-% 128-shift
-% rblock=rblock+128;
-% 在块20无误差的做法，先移位再取整
 rblock=uint8(rblock+128)
-
 ```
 
 #### 恢复并显示对应空域的图像块
 
-通过对比原图和jpeg解压缩后的图像，查看恢复图像是否出现了误差，从视觉上没有什么误差，从数据分析上也是相同的，所以恢复成功。
+通过对比原图和jpeg解压缩后的图像，查看恢复图像是否出现了误差，从视觉上没有什么误差，从数据分析上也是相同的，所以恢复成功。图8是两个图像块的对比图，其中选取的是lena512.bmp图像。
 
 ```matlab
 img=imread(impath);
-% 20th-8*8的块
-% (1:8,153:160)
+% 20th-8*8的块所在的位置(1:8,153:160)
 img=img(1:8,153:160);
 subplot(1,2,1),imshow(img),title('原始图像');
 subplot(1,2,2),imshow(rblock),title('反变换的图像');
-
 ```
-图8是两个图像块的对比图。
+
+![origin-change-contrast](images/20-origin-change-contrast.png)
+<center> lena512.bmp的第20宏块的空域恢复
 
 
 ### 3.3.2 观察并分析JPEG压缩引起的块效应
 
-(1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色，所以我把块的大小设置为64x64，测试当质量因子为1,5,10,50,90的情况下，图像块的情况。
+(1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色而且显示比较平滑，所以我把块的大小设置为64x64，测试当质量因子为1,5,10,50,90的情况下，图像块的情况。
+
+![co1block64](images/co1block64-origin-change-contrast.png)
+<center> 质量因子为1的64x64图像块
+
+![co5block64](images/co5block64-origin-change-contrast.png)
+<center> 质量因子为5的64x64图像块
+
+![co10block64](images/co10block64-origin-change-contrast.png)
+<center> 质量因子为10的64x64图像块
+
+![co50block64](images/co50block64-origin-change-contrast.png)
+<center> 质量因子为50的64x64图像块
+
+![co90block64](images/co90block64-origin-change-contrast.png)
+<center> 质量因子为90的64x64图像块
 
 
-(2) 实验结果分析：当质量因子越小时，我们可以明显的看到整个图像块由很多小块组成，即块边缘特别清晰；随着质量因子增加，块边缘逐渐模糊，变得平滑。
+(2) 实验结果分析：当质量因子越小时，可以明显的看到整个图像块由很多小块组成，即块边缘特别清晰；随着质量因子增加，图像块的不同颜色增多，块边缘逐渐模糊而变得平滑。
 
 # 4 参考资料
 (1) 文件格式的说明：

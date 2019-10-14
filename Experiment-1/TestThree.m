@@ -54,6 +54,7 @@ path='images\';
 % 5.append the blocksize to see the block affect of the JPEG compression  %
 %-------------------------------------------------------------------------%
 
+% 研究jpeg的分块效应
 impath='lena512.jpg';
 % 选取images中质量因子不同的图片
 % impath=[path,'90.jpg'];

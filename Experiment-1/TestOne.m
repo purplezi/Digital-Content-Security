@@ -4,22 +4,22 @@ path='images/';
 % 1.Read gray scale                                                       %
 %-------------------------------------------------------------------------%
 
-% imread返回值类型为uint8
+% %imread返回值类型为uint8
 % im=imread('lena512.bmp');
-% show original image
-% figure('name','Original image'), imshow(im);
+% %show original image
+% %figure('name','Original image'), imshow(im);
 
 %-------------------------------------------------------------------------%
 % 2.Read color scale                                                      %
 %-------------------------------------------------------------------------%
 
-% convert the image to YIQ color space
+% %convert the image to YIQ color space
 % y=rgb2ntsc(im);
 
-% get the NTSC luminance value
-% represented by the first color channel in the YIQ image.
+% %get the NTSC luminance value
+% %represented by the first color channel in the YIQ image.
 % y=y(:,:,1);
-% figure('name','Grayscale image'), imshow(y);
+% %figure('name','Grayscale image'), imshow(y);
 
 %-------------------------------------------------------------------------%
 % 3.Quality change from 0-100                                             %
@@ -27,7 +27,7 @@ path='images/';
 
 % get the images when Quality change between 0-100 
 % for i=0:100
-%     % 将文件重命名放入images文件夹中
+%     % 将文件重命名放入同目录的自己生成的images文件夹中
 %     savename=[num2str(i),'.jpg'];
 %     savename=[path,savename];
 %     % imwrite可以实现JPEG压缩并指定质量因子
@@ -38,7 +38,7 @@ path='images/';
 % 4.Quality Contrast                                                      %
 %-------------------------------------------------------------------------%
 
-% contrast
+% contrast质量因子的对比图
 q=[1, 5, 10, 15, 30, 50, 70, 90];
 num=1;
 for i=q

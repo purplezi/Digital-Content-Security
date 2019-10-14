@@ -186,7 +186,7 @@ xlabel('灰度级(8bit)','FontSize',8);
 图6是对应lena512.bmp的灰度直方图的绘制，生成的灰度直方图和用imhist生成的相同。
 
 ![lena512-gray](images/graypic-lena512.png)
-<center> lena512.bmp灰度直方图
+<center> 图6 lena512.bmp灰度直方图
 
 ### 3.2.2 实验结果分析
 
@@ -208,7 +208,7 @@ xlabel('灰度级(8bit)','FontSize',8);
 
 (2)用nsf5中的jpeg_read读取该图像以及其DCT系数。已知jpeg_read的返回值是一个结构体，如图7所示。
     ![jpeg-structure](images/jpeg-structure.png)
-    <center> jpeg_read返回的结构体
+    <center> 图7 jpeg_read返回的结构体
 
 ```matlab
 % a JPEG image structure
@@ -231,7 +231,7 @@ block=DCT(129:192,193:256);
 
 (1) JPEG解压缩的过程如图8，在JPEG压缩的过程中，先对像素值进行-128的平移操作，然后再进行DCT变换，最后进行量化，然后取整。
     ![encode-decode](images/encode-decode.png)
-    <center> JPEG压缩和解压缩的过程
+    <center> 图8 JPEG压缩和解压缩的过程
 
 (2) 通过jpeg_read读取的量化后的DCT系数和量化表，进行反量化和逆DCT变换。
 
@@ -257,7 +257,7 @@ rblock=uint8(rblock+128);
 
 #### 恢复并显示对应空域的图像块
 
-通过对比原图和jpeg解压缩后的图像，查看恢复图像是否出现了误差，从视觉上没有什么误差，从数据分析上也是相同的，所以恢复成功。图8是两个图像块的对比图，其中选取的是lena512.bmp图像。
+通过对比原图和jpeg解压缩后的图像，查看恢复图像是否出现了误差，从视觉上没有什么误差，从数据分析上也是相同的，所以恢复成功。图9是两个图像块的对比图，其中选取的是lena512.bmp图像。
 
 ```matlab
 img=imread(impath);
@@ -267,7 +267,7 @@ subplot(1,2,2),imshow(rblock),title('反变换的图像');
 ```
 
 ![origin-change-contrast](images/20th-64x64.png)
-<center> lena512.bmp的第20宏块的空域恢复
+<center> 图9 lena512.bmp的第20宏块的空域恢复
 
 
 ### 3.3.2 观察并分析JPEG压缩引起的块效应

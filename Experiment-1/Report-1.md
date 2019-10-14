@@ -1,6 +1,6 @@
-# <center> 图像基本处理以及图像JPEG压缩
-##### <center> 赵紫如
-###### <center> 学号：201711123020 班级：信息安全2017级
+# <center> 图像基本处理以及图像JPEG压缩 </center>
+##### <center> 赵紫如 </center>
+###### <center> 学号：201711123020 班级：信息安全2017级 <center>
 
 # 1 测试环境
 (1) 实验图像：512x512的灰度图像(即lena512.bmp)和512x512的彩色图像(即lena512.tif)。
@@ -66,7 +66,7 @@ end
 从实验上验证我们的分析，可得如下对比图1。
 
 ![质量因子的变化](images/qualifactor-contrast.png)
-<center> 图1 不同质量因子的JPEG图像
+<center> 图1 不同质量因子的JPEG图像 </center>
 
 ### 3.1.3 绘制PSNR~Q曲线
 
@@ -98,7 +98,7 @@ end
 处理后的曲线为图2。
 
 ![PSNR~Q1](images/PSNR~Q-myfunc.png)
-<center> 图2 PSNR~Q曲线
+<center> 图2 PSNR~Q曲线 </center>
 
 (3) 调用matlab的内置psnr函数
 
@@ -118,12 +118,12 @@ end
 处理后的曲线为图3，和图2的结果一致。
 
 ![PSNR~Q2](images/PSNR~Q.png)
-<center> 图3 调用psnr函数绘制PSNR~Q曲线
+<center> 图3 调用psnr函数绘制PSNR~Q曲线 </center>
 
 ### 3.1.4 实验结果分析
 
-(1) PSNR的指标：PSNR高于40dB说明图像质量极好（即非常接近原始图像）；在30—40dB通常表示图像质量是好的（即失真可以察觉但可以接受）；在20—30dB说明图像质量差；PSNR低于20dB图像不可接受。
-(2) 在质量因子为0~20和80~100时，图像的PSNR变化较快；质量因子为20~80时，变化较为缓慢。
+(1) PSNR的指标：PSNR高于40dB说明图像质量极好（即非常接近原始图像）；在30-40dB通常表示图像质量是好的（即失真可以察觉但可以接受）；在20-30dB说明图像质量差；PSNR低于20dB图像不可接受。
+(2) 在质量因子为0~20和80~100时，图像的PSNR变化较快；质量因子为20~80时，变化较为缓慢。当图像的PSNR位于30dB以下时，图像被压缩的程度大，图像在视觉上块效应明显，当30dB以上时，图像在视觉上块效应相对没那么明显。
 
 ## 3.2 显示压缩前后的灰度直方图，观察并分析所存在的差异
 
@@ -152,10 +152,10 @@ end
 imhist函数绘图的横坐标是灰度级，在此处则是从0到255，纵坐标是每一个灰度级在图像中出现的个数。
 
 ![imhist-1](images/imhist-1.png)
-<center> 图4 质量因子q为1，10，30的图像灰度直方图
+<center> 图4 质量因子q为1，10，30的图像灰度直方图 </center>
 
 ![imhist-2](images/imhist-2.png)
-<center> 图5 质量因子q为50，70，90的图像灰度直方图
+<center> 图5 质量因子q为50，70，90的图像灰度直方图 </center>
 
 
 
@@ -186,7 +186,7 @@ xlabel('灰度级(8bit)','FontSize',8);
 图6是对应lena512.bmp的灰度直方图的绘制，生成的灰度直方图和用imhist生成的相同。
 
 ![lena512-gray](images/graypic-lena512.png)
-<center> 图6 lena512.bmp灰度直方图
+<center> 图6 lena512.bmp灰度直方图 </center>
 
 ### 3.2.2 实验结果分析
 
@@ -214,14 +214,16 @@ im=jpeg_read(impath);
 % DCT plane 读取DCT系数
 DCT=im.coef_arrays{1};
 ```
+
 ![jpeg-structure](images/jpeg-structure.png)
-    <center> 图7 jpeg_read返回的结构体
+    <center> 图7 jpeg_read返回的结构体 </center>
 
 
 #### 我的学号为20，则找到第20个宏块的DCT系数
 
 由于JPEG是对每个8x8的小块进行DCT，而8x8的小块太小，实验效果不明显，所以选择8x8个8x8的小块，即64个8
 x8小块为一个宏块进行实验验证。
+
 ```matlab
 % 选第20个宏块的起始行的下标为129，结束行的下标为192
 % 选第20个宏块的起始列的下标为129，结束列的下标为192
@@ -231,8 +233,10 @@ block=DCT(129:192,193:256);
 #### 模拟反量化和逆DCT变换
 
 (1) JPEG解压缩的过程如图8，在JPEG压缩的过程中，先对像素值进行-128的平移操作，然后再进行DCT变换，最后进行量化，然后取整。
-    ![encode-decode](images/encode-decode.png)
-    <center> 图8 JPEG压缩和解压缩的过程
+
+![encode-decode](images/encode-decode.png)
+    <center> 图8 JPEG压缩和解压缩的过程 </center>
+    
 
 (2) 通过jpeg_read读取的量化后的DCT系数和量化表，进行反量化和逆DCT变换。
 
@@ -268,7 +272,7 @@ subplot(1,2,2),imshow(rblock),title('反变换的图像');
 ```
 
 ![origin-change-contrast](images/20th-64x64.png)
-<center> 图9 lena512.bmp的第20宏块的空域恢复
+<center> 图9 lena512.bmp的第20宏块的空域恢复 </center>
 
 
 ### 3.3.2 观察并分析JPEG压缩引起的块效应
@@ -276,22 +280,23 @@ subplot(1,2,2),imshow(rblock),title('反变换的图像');
 (1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色而且显示比较平滑，所以将块的大小设置为64x64，即对一个宏块进行测试，当质量因子为1,5,10,50,90的情况下图像宏块的情况。
 
 ![co1block64](images/co1block64-origin-change-contrast.png)
-<center> 质量因子为1的64x64图像块
+<center> 质量因子为1的64x64图像块 </center>
 
 ![co5block64](images/co5block64-origin-change-contrast.png)
-<center> 质量因子为5的64x64图像块
+<center> 质量因子为5的64x64图像块 </center>
 
 ![co10block64](images/co10block64-origin-change-contrast.png)
-<center> 质量因子为10的64x64图像块
+<center> 质量因子为10的64x64图像块 </center>
 
 ![co50block64](images/co50block64-origin-change-contrast.png)
-<center> 质量因子为50的64x64图像块
+<center> 质量因子为50的64x64图像块 </center>
 
 ![co90block64](images/co90block64-origin-change-contrast.png)
-<center> 质量因子为90的64x64图像块
+<center> 质量因子为90的64x64图像块 </center>
 
 
 (2) 实验结果分析：当质量因子越小时，可以明显的看到整个图像块由很多小块组成，即块边缘特别清晰；随着质量因子增加，图像块的不同颜色增多，块边缘逐渐模糊而变得平滑。
+
 
 
 

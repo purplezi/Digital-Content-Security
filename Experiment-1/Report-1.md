@@ -159,13 +159,40 @@ imhist函数绘图的横坐标是灰度级，在此处则是从0到255，纵坐�
 
 
 
+(2) 若不用内置函数imhist，则需要手动实现对读入的灰度图片进行0~255像素点出现个数的统计，实现代码如下。
+
+```matlab
+im=imread('lena512.bmp');
+im=double(im);
+len=512;
+% 若写成zeros(1:256)会报错超出了程序允许的最大变量值。
+gray=zeros(1,256);
+for i=1:len
+   for j=1:len 
+       % 取像素值并且转为整形才能用于下标访问
+       ind=uint8(im(i,j));
+       % 像素值可能为0
+       ind=ind+1;
+       % 将对应的像素值的统计量++
+       gray(ind)=gray(ind)+1;
+   end
+end
+
+%内置函数bar画柱状图
+bar(gray);
+xlabel('灰度级(8bit)','FontSize',8);
+```
+
+图6是对应lena512.bmp的灰度直方图的绘制，生成的灰度直方图和用imhist生成的相同。
+
 ### 3.2.2 实验结果分析
 
 (1) 当质量因子越高，JPEG压缩图像的直方图越接近原图。
 
 (2) 当质量因子很低时，直方图的灰度级的分布不集中、稀少且与原图的直方图差异很大。
 
-(3) 问题：为什么不能用imhist？histogram只能画直方图(不推荐使用hist)，则要自己统计图像中灰度级出现的个数，所以很麻烦。
+(3) 问题：为什么不能用imhist？histogram只能画直方图(不推荐使用hist)，则要自己统计图像中灰度级出现的个数，所以很麻烦。imhist需要什么内置参数？
+
 
 ## 3.3 读取JPEG图像文件
 
@@ -173,19 +200,28 @@ imhist函数绘图的横坐标是灰度级，在此处则是从0到255，纵坐�
 
 ### 3.3.1 提取JPEG文件的结构
 
-(1) 用imwrite将lena512.bmp转为lena512.jpg，用nsf5中的jpeg_read读取该图像以及其DCT系数。
+#### 用nsf5的jpeg_read读取数字图像文件信息
+
+(1) 用imwrite将lena512.bmp转为lena512.jpg，因为要处理的是一个jpeg格式的图像。
 
 ```matlab
 im=imread('lena512.bmp');
 imwrite(im,'lena512.jpg','.jpg');
 impath='lena512.jpg';
+```
+
+(2)用nsf5中的jpeg_read读取该图像以及其DCT系数。已知jpeg_read的返回值是一个结构体，如图7所示。
+    ![jpeg-structure](images/jpeg-structure.png)
+
+
+```matlab
 % a JPEG image structure
 im=jpeg_read(impath);
 % DCT plane
 DCT=im.coef_arrays{1};
 ```
 
-(2) 学号为20，则找到第20个8*8的小块的DCT系数。
+#### 学号为20，则找到第20个8*8的小块的DCT系数
 
 ```matlab
 % 160=20*8;
@@ -193,18 +229,53 @@ DCT=im.coef_arrays{1};
 block=DCT(1:8,153:160);
 ```
 
-(3) 模拟反量化和逆DCT变换、必须得先知道量化表，也可以通过jpeg的结构读出来。还未完成、可能什么地方写错了不太对！！！！！
+#### 模拟反量化和逆DCT变换
+
+(1) JPEG解压缩的过程如图7，在JPEG压缩的过程中，先对像素值进行-128的平移操作，然后再进行DCT变换，最后进行量化，然后取整。
+    ![encode-decode](images/encode-decode.png)
+
+
+(2) 通过jpeg_read读取的量化后的DCT系数和量化表，进行反量化和逆DCT变换。
+    
 
 ```matlab
+% get the quantization table
+qtable=im.quant_tables{1};
+
+% 反量化
+qblock=block.*qtable
+rblock=idct2(qblock)
+% 在块20有误差的做法，先取整在移位
+% rblock=uint8(rblock);
+% 128-shift
+% rblock=rblock+128;
+% 在块20无误差的做法，先移位再取整
+rblock=uint8(rblock+128)
 
 ```
 
-(4) 恢复并显示对应空域的图像块
+#### 恢复并显示对应空域的图像块
+
+通过对比原图和jpeg解压缩后的图像，查看恢复图像是否出现了误差，从视觉上没有什么误差，从数据分析上也是相同的，所以恢复成功。
+
+```matlab
+img=imread(impath);
+% 20th-8*8的块
+% (1:8,153:160)
+img=img(1:8,153:160);
+subplot(1,2,1),imshow(img),title('原始图像');
+subplot(1,2,2),imshow(rblock),title('反变换的图像');
+
+```
+图8是两个图像块的对比图。
+
 
 ### 3.3.2 观察并分析JPEG压缩引起的块效应
 
+(1) 由于8*8的分块看不出什么块效应，几乎都是同一个颜色，所以我把块的大小设置为64x64，测试当质量因子为1,5,10,50,90的情况下，图像块的情况。
 
-### 3.3.2
+
+(2) 实验结果分析：当质量因子越小时，我们可以明显的看到整个图像块由很多小块组成，即块边缘特别清晰；随着质量因子增加，块边缘逐渐模糊，变得平滑。
 
 # 4 参考资料
 (1) 文件格式的说明：
@@ -212,3 +283,5 @@ block=DCT(1:8,153:160);
 * PNG(Portable Network Graphics)便携式网络图形，一种无损压缩的位图片形格式
 
 (2) [读取JPEG文件的压缩质量/质量因子参数](https://blog.csdn.net/gwena/article/details/71123734)
+
+(3) matlab中内置函数imhist的实现过程(https://ww2.mathworks.cn/help/images/ref/imhist.html?s_tid=srchtitle)

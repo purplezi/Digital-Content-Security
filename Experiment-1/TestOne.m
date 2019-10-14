@@ -94,11 +94,11 @@ end
 %-------------------------------------------------------------------------%
 
 % 设置线宽
-LineWidth_Plot=plot(ans);
-set(LineWidth_Plot,'LineWidth',2);
+% LineWidth_Plot=plot(ans);
+% set(LineWidth_Plot,'LineWidth',2);
 % 设置横纵轴名称以及字体大小
-xlabel('质量因子Q','FontSize',16);
-ylabel('峰值信噪比PSNR(dB)','FontSize',16);
-title('PSNR~Q曲线');
+% xlabel('质量因子Q','FontSize',16);
+% ylabel('峰值信噪比PSNR(dB)','FontSize',16);
+% title('PSNR~Q曲线');
 
 

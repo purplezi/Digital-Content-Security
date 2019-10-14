@@ -6,7 +6,7 @@
 (1) 实验图像：512x512的灰度图像(即lena512.bmp)和512x512的彩色图像(即lena512.tif)。
 
 (2) 使用的工具：MATLAB R2018a。
-  
+
 # 2 实验目的
 (1)熟悉Matlab图像处理编程环境；
 
@@ -207,8 +207,6 @@ xlabel('灰度级(8bit)','FontSize',8);
 (1) 用imwrite将lena512.bmp转为lena512.jpg，因为要处理的是一个jpeg格式的图像。
 
 (2)用nsf5中的jpeg_read读取该图像以及其DCT系数。已知jpeg_read的返回值是一个结构体，如图7所示。
-    ![jpeg-structure](images/jpeg-structure.png)
-    <center> 图7 jpeg_read返回的结构体
 
 ```matlab
 % a JPEG image structure
@@ -216,6 +214,9 @@ im=jpeg_read(impath);
 % DCT plane 读取DCT系数
 DCT=im.coef_arrays{1};
 ```
+![jpeg-structure](images/jpeg-structure.png)
+    <center> 图7 jpeg_read返回的结构体
+
 
 #### 我的学号为20，则找到第20个宏块的DCT系数
 
@@ -292,7 +293,10 @@ subplot(1,2,2),imshow(rblock),title('反变换的图像');
 
 (2) 实验结果分析：当质量因子越小时，可以明显的看到整个图像块由很多小块组成，即块边缘特别清晰；随着质量因子增加，图像块的不同颜色增多，块边缘逐渐模糊而变得平滑。
 
+
+
 # 4 参考资料
+
 (1) 文件格式的说明：
 * TIFF(Tag Image File Format)标签图像文件格式，是灵活的位图格式，主要用来储存包括照片和艺术图在内的图像
 * PNG(Portable Network Graphics)便携式网络图形，一种无损压缩的位图片形格式
